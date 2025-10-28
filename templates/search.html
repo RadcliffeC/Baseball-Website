@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Search | Baseball{% endblock %}
+
+{% block content %}
+
+    <h1>Search info on teams</h1>
+
+
+    <form method="post">
+        <label for="team_name">Team Name:</label>
+        <select id="team_name" name="team_name">
+            {% for team in teams %}
+                <option value="{{ team }}">{{ team }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="year">Year:</label>
+        <select id="year" name="year">
+            {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Swing!</button>
+    </form>
+
+
+    {%  if team %}
+
+        {% if team.team_name == "NOT FOUND" %}
+            <p>Selected team not active during selected year</p>
+        {% endif %}
+
+    <h3>
+    {{ team.team_name }}    {{ team.years }}    {{ team.wins }}  {{ team.losses }} {{ team.team_hr }}   {{ team.park }}     {{ team.attendance }}
+    </h3>
+
+
+    {% endif %}
+
+
+{% endblock %}
