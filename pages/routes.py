@@ -1,4 +1,4 @@
-from flask import request, render_template, Blueprint
+from flask import request, render_template, Blueprint, jsonify
 from teams import Team
 from flask_login import login_required, current_user
 
@@ -47,7 +47,7 @@ def search():
                     selected_team = Team(team, year, wins,
                                          losses, team_hr, park, attendance)
                 except Exception as e:
-                    selected_team = Team("NOT FOUND")
+                    print(e)
 
 
 
@@ -59,3 +59,28 @@ def search():
 
 
     return render_template('search.html', teams=teams, years=years, team=selected_team)
+
+@pages_bp.route('/get_years/<team>', methods=['GET', 'POST'])
+def get_years(team):
+    years = get_years_for_team(team)
+    return jsonify(years)
+
+
+
+def get_years_for_team(team):
+    years = []
+    conn, cursor = get_db_connection()
+    if conn and cursor:
+        try:
+            cursor.execute("SELECT yearid FROM teams WHERE team_name = %s", (team))
+            rows = cursor.fetchall()
+            for row in rows:
+                years.append(row[0])
+
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+
+    return years

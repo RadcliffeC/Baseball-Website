@@ -28,10 +28,6 @@
 
     {%  if team %}
 
-        {% if team.team_name == "NOT FOUND" %}
-            <p>Selected team not active during selected year</p>
-        {% endif %}
-
     <h3>
     {{ team.team_name }}    {{ team.years }}    {{ team.wins }}  {{ team.losses }} {{ team.team_hr }}   {{ team.park }}     {{ team.attendance }}
     </h3>
@@ -39,5 +35,30 @@
 
     {% endif %}
 
+    <script>
+    document.getElementById('team_name').addEventListener('change', function(e) {
+        const team = this.value;
+        const year_select = document.getElementById('year');
+
+        year_select.innerHTML = '' ;
+
+        if (team){
+            fetch(`get_years/${team}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(year => {
+                    const option = document.createElement('option');
+                    option.text = year;
+                    option.value = year;
+                    year_select.appendChild(option);
+                });
+                year_select.disabled = false;
+            });
+        } else{
+            year_select.disabled = true;
+        }
+    });
+
+    </script>
 
 {% endblock %}

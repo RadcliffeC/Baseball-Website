@@ -7,6 +7,3 @@ class Team:
         self.team_hr = team_hr
         self.park = park
         self.attendance = attendance
-
-    def __init__(self, team):
-        self.team_name = team
