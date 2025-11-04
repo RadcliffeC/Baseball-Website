@@ -8,6 +8,17 @@
 <body>
     <header>
         <h1>Welcome to the Baseball Application</h1>
+        <a href="{{ url_for('pages.logout') }}">
+            <button type="button">Logout</button>
+        </a>
+        <a href="{{ url_for('hello_world') }}">Home</a>
+
+{#        <label for="stat_leaders">History's Best</label>#}
+{#        <select name="stat_leaders" id="stat_leaders">#}
+{#                #}
+{#        </select>#}
+
+
         {% block header %}{% endblock %}
     </header>
 

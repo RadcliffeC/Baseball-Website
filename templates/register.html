@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block title %}Register | Baseball{% endblock %}
+
+{% block content %}
+
+    <form method="POST">
+        <input type="text" name="email" placeholder="Email" required>
+        <input name="username" type="text" placeholder="Username" required>
+        <input name="password" type="password" placeholder="Password" required>
+        <input name="confirm" type="password" placeholder="Confirm Password" required>
+
+        <select id="favorite_team" name="favorite_team">
+            {% for team in teams %}
+                <option value="{{ team }}">{{ team }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+
+{% endblock %}

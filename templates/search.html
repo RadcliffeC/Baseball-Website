@@ -29,9 +29,15 @@
     {%  if team %}
 
     <h3>
-    {{ team.team_name }}    {{ team.years }}    {{ team.wins }}  {{ team.losses }} {{ team.team_hr }}   {{ team.park }}     {{ team.attendance }}
+    in {{ team.years }} , the {{ team.team_name }} had {{ team.wins }} wins and {{ team.losses }} losses.
+     They scored a total of {{ team.team_hr }} home runs for the season.
+
+       Their home ballpark for {{ team.years }} was {{ team.park }}.
+        They had {{ team.attendance }} people attend their home games.
     </h3>
 
+     <h2>Batting Stats</h2>
+        <h2>Pitching Stats</h2>
 
     {% endif %}
 
