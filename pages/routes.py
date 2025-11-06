@@ -4,7 +4,7 @@ from teams import Team
 from email_validator import validate_email, EmailNotValidError
 from flask_login import login_required, login_user, logout_user
 
-from csi3335f2025 import *
+from db_connection import get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
 
 pages_bp = Blueprint('pages', __name__, template_folder='templates')

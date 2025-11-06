@@ -1,0 +1,192 @@
+/* Baseball-themed color palette */
+:root {
+    --baseball-white: #FFFFFF;
+    --baseball-cream: #F4F2E9;
+    --baseball-red: #BA0C2F;
+    --baseball-blue: #002D72;
+    --baseball-brown: #78371C;
+    --baseball-grey: #CCCCCC;
+}
+
+/* Base styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--baseball-cream);
+    color: var(--baseball-blue);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styling */
+header {
+    background-color: var(--baseball-red);
+    color: var(--baseball-white);
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Navigation links */
+header a {
+    color: var(--baseball-white);
+    text-decoration: none;
+    margin: 0 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+header a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Main content area */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Form styling */
+form {
+    background-color: var(--baseball-white);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+/* Input fields */
+input, select {
+    width: 100%;
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    border: 2px solid var(--baseball-grey);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+input:focus, select:focus {
+    border-color: var(--baseball-blue);
+    outline: none;
+}
+
+/* Buttons */
+button {
+    background-color: var(--baseball-red);
+    color: var(--baseball-white);
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--baseball-blue);
+}
+
+/* Stats display */
+h3 {
+    background-color: var(--baseball-white);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 5px solid var(--baseball-red);
+    margin: 1rem 0;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background-color: var(--baseball-white);
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--baseball-grey);
+}
+
+th {
+    background-color: var(--baseball-blue);
+    color: var(--baseball-white);
+}
+
+tr:nth-child(even) {
+    background-color: var(--baseball-cream);
+}
+
+/* Footer styling */
+footer {
+    background-color: var(--baseball-blue);
+    color: var(--baseball-white);
+    text-align: center;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Flash messages */
+.flash-message {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 5px;
+    background-color: var(--baseball-red);
+    color: var(--baseball-white);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    main {
+        padding: 0 0.5rem;
+    }
+    
+    form {
+        padding: 1rem;
+    }
+}
+
+/* Baseball card effect for team info */
+.team-info {
+    background-color: var(--baseball-white);
+    border-radius: 10px;
+    padding: 2rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.team-info:hover {
+    transform: translateY(-5px);
+}
+
+/* Baseball stitch decoration */
+.stitch-decoration {
+    border: 2px solid var(--baseball-red);
+    position: relative;
+}
+
+.stitch-decoration::before,
+.stitch-decoration::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background-color: var(--baseball-red);
+}
