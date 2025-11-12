@@ -1,13 +1,13 @@
-from flask import request, render_template, Blueprint, jsonify, redirect, url_for, flash
+from flask import request, render_template, jsonify, redirect, url_for, flash
 from models import User, db
 from teams import Team
 from email_validator import validate_email, EmailNotValidError
 from flask_login import login_required, login_user, logout_user
 
 from db_connection import get_db_connection
+from pages.__init__ import pages_bp
 from werkzeug.security import generate_password_hash, check_password_hash
-
-pages_bp = Blueprint('pages', __name__, template_folder='templates')
+from Player import Player
 
 
 def register_submit(username, password, email, favorite_team):
@@ -89,35 +89,133 @@ def logout():
 @login_required
 def search():
     teams, years = [], []
-    selected_team = None
 
     conn, cursor = get_db_connection()
     if conn and cursor:
         try:
-            cursor.execute("SELECT distinct team_name FROM teams ORDER BY team_name ASC")
+            cursor.execute("SELECT DISTINCT team_name FROM teams ORDER BY team_name ASC")
             teams = [row[0] for row in cursor.fetchall()]
 
             cursor.execute("SELECT distinct yearid FROM teams ORDER BY yearid DESC")
             years = [row[0] for row in cursor.fetchall()]
-
-            if request.method == 'POST':
-                team = request.form['team_name']
-                year = request.form['year']
-                cursor.execute(
-                    "SELECT team_W, team_L, team_HR, park_name, team_attendance "
-                    "FROM teams WHERE team_name = %s AND yearid = %s",
-                    (team, year))
-                row = cursor.fetchone()
-                if row:
-                    selected_team = Team(team, year, *row)
         except Exception as e:
             print(e)
         finally:
             cursor.close()
             conn.close()
 
+    if request.method == 'POST':
+        team_name = request.form['team_name']
+        year = request.form['year']
+        return redirect(url_for('pages.teams', team_name=team_name, year=year))
 
-    return render_template('search.html', teams=teams, years=years, team=selected_team)
+
+    return render_template('search.html', teams=teams, years=years)
+
+
+@pages_bp.route('/players/<playerId>')
+@login_required
+def players(playerId):
+    conn, cursor = get_db_connection()
+    player = None
+    batting_career, pitching_career = [], []
+
+    if conn and cursor:
+        try:
+            cursor.execute("""SELECT
+                playerID, birthYear, birthMonth, birthDay, deathYear, deathMonth, deathDay,
+                       nameFirst, nameLast, nameGiven, weight, height, bats, throws, debutDate, finalGameDate
+                              FROM people WHERE playerID = %s""", (playerId,))
+            row = cursor.fetchone()
+            if row:
+                player = Player()
+                (player.playerId, player.birthYear, player.birthMonth, player.birthDay,
+                 player.deathYear, player.deathMonth, player.deathDay, player.nameFirst,
+                 player.nameLast, player.nameGiven, player.weight, player.height,
+                 player.bats, player.throws, player.debut, player.finalGame) = row[:16]
+
+            cursor.execute("""SELECT yearid, t.teamid, b.b_G, b.b_AB, b.b_R, b.b_H, b.b_2B, b.b_3B, b.b_HR, 
+                       b.b_RBI, b.b_SB, b.b_CS, b.b_BB, b.b_SO, b.b_IBB, b.b_HBP, b.b_SH, b.b_SF, b.b_GIDP
+                FROM batting b 
+                         NATURAL JOIN teams t 
+                WHERE playerID = %s ORDER BY yearid""", (playerId,))
+            batting_career = cursor.fetchall()
+
+            cursor.execute("""SELECT yearid, t.teamid, p.p_W, p.p_L, p.p_G, p.p_GS, p.p_CG, p.p_SHO, p.p_SV, p.p_IPOuts,
+                    p.p_H, p.p_ER, p.p_HR, p.p_BB, p.p_SO, p.p_BAOpp, p.p_ERA, p.p_IBB, p.p_WP, p.p_HBP,
+                    p.p_BK, p.p_BFP, p.p_GF, p.p_R, p.p_SH, p.p_SF, p.p_GIDP
+                 FROM pitching p NATURAL JOIN teams t
+                    WHERE playerid = %s
+            """, (playerId,))
+            pitching_career = cursor.fetchall()
+
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+
+    return render_template('player.html', player = player,
+                           batting = batting_career, pitching = pitching_career)
+
+
+@pages_bp.route('/teams/<team_name>')
+@login_required
+def teams(team_name):
+    year = request.args.get('year')
+    selected_team = None
+    batting_stats, pitching_stats = [], []
+
+    if not year:
+        flash("Please select a year")
+        return redirect(url_for('pages.search'))
+
+    conn, cursor = get_db_connection()
+    if conn and cursor:
+        try:
+
+                cursor.execute(
+                    "SELECT team_name, yearid, team_W, team_L, team_HR, park_name, team_attendance "
+                    "FROM teams WHERE team_name = %s AND yearid = %s",
+                    (team_name, year))
+                row = cursor.fetchone()
+                if row:
+                    selected_team = Team(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+
+                batting_query = """
+                SELECT p.playerid, p.nameLast, b.b_G, b.b_AB, b.b_R, b.b_H, b.b_2B, b.b_3B, b.b_HR, 
+                       b.b_RBI, b.b_SB, b.b_CS, b.b_BB, b.b_SO, b.b_IBB, b.b_HBP, b.b_SH, b.b_SF, b.b_GIDP
+                FROM batting b 
+                         NATURAL JOIN people p 
+                         NATURAL JOIN teams t 
+                WHERE t.team_name = %s AND yearid = %s
+                """
+
+                pitching_query = """
+                SELECT pe.playerid, pe.nameLast, p.p_W, p.p_L, p.p_G, p.p_GS, p.p_CG, p.p_SHO, p.p_SV, p.p_IPOuts,
+                    p.p_H, p.p_ER, p.p_HR, p.p_BB, p.p_SO, p.p_BAOpp, p.p_ERA, p.p_IBB, p.p_WP, p.p_HBP,
+                    p.p_BK, p.p_BFP, p.p_GF, p.p_R, p.p_SH, p.p_SF, p.p_GIDP
+                 FROM pitching p NATURAL JOIN teams t NATURAL JOIN people pe
+                    WHERE t.team_name = %s AND yearid = %s
+                """
+
+                cursor.execute(batting_query, (team_name, year))
+                batting_stats = cursor.fetchall()
+                cursor.execute(pitching_query, (team_name, year))
+                pitching_stats = cursor.fetchall()
+        except Exception as e:
+            print(e)
+        finally:
+            cursor.close()
+            conn.close()
+    return render_template(
+        'team.html',
+        team=selected_team,
+        batting=batting_stats,
+        pitching=pitching_stats,
+        year=year
+    )
+
 
 @pages_bp.route('/get_years/<team>', methods=['GET', 'POST'])
 def get_years(team):

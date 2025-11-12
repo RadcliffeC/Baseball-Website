@@ -1,10 +1,8 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
-from flask_migrate import Migrate
 
 from models import db, User
 from pages.routes import pages_bp
-import csi3335f2025
 
 
 def create_app():

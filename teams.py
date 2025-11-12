@@ -1,7 +1,7 @@
 class Team:
-    def __init__(self, name, years, wins, losses, team_hr, park, attendance ):
+    def __init__(self, name, year, wins, losses, team_hr, park, attendance ):
         self.team_name = name
-        self.years = years
+        self.year = year
         self.wins = wins
         self.losses = losses
         self.team_hr = team_hr
