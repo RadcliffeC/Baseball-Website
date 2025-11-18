@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
+from sqlalchemy.sql.functions import user
 
 from models import db, User
 from pages.routes import pages_bp
@@ -17,6 +18,8 @@ def create_app():
     db.init_app(app)
 
     with app.app_context():
+        '''This is a command to drop the entire user table in the SQLALchemy database'''
+        #db.drop_all()
         db.create_all()
 
     login_manager = LoginManager()
@@ -34,6 +37,9 @@ app = create_app()
 
 @app.route('/')
 def hello_world():
+    if current_user.is_authenticated:
+        favorite_team = User.query.filter_by(username=current_user.username).first().favorite_team
+        return render_template('dashboard.html', user_name=current_user.username, favorite_team=favorite_team)
     return render_template('home.html')
 
 

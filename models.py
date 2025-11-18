@@ -9,4 +9,4 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
-    favorite_team = db.column(db.String(80))
+    favorite_team = db.Column(db.String(80))

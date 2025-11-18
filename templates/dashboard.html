@@ -8,4 +8,7 @@
 
     <a href="{{ url_for('pages.search') }}">Search history</a>
 
+
+    <a href="{{ url_for('pages.teams', team_name=favorite_team, year="Pickles") }}">Random Year of the {{ favorite_team }}</a>
+
 {% endblock %}

@@ -3,6 +3,7 @@ from models import User, db
 from teams import Team
 from email_validator import validate_email, EmailNotValidError
 from flask_login import login_required, login_user, logout_user
+import random
 
 from db_connection import get_db_connection
 from pages.__init__ import pages_bp
@@ -34,7 +35,7 @@ def register_submit(username, password, email, favorite_team):
     db.session.commit()
 
     login_user(user, True)
-    return render_template('dashboard.html', user_name=username)
+    return render_template('dashboard.html', user_name=username, favorite_team=favorite_team)
 
 
 @pages_bp.route('/register', methods=['GET', 'POST'])
@@ -71,7 +72,8 @@ def login():
         user = User.query.filter_by(username=username).first()
         if user and check_password_hash(user.password, password):
             login_user(user, remember=True)
-            return render_template('dashboard.html', user_name=username)
+            favorite_team = User.query.filter_by(username=username).first().favorite_team
+            return render_template('dashboard.html', user_name=username, favorite_team=favorite_team)
         else:
             flash("Invalid username or password")
             return redirect(url_for('pages.login'))
@@ -84,7 +86,6 @@ def logout():
     logout_user()
     return redirect(url_for('pages.login'))
 
-@login_required
 @pages_bp.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
@@ -170,6 +171,10 @@ def teams(team_name):
         flash("Please select a year")
         return redirect(url_for('pages.search'))
 
+    if year == "Pickles":
+        years = get_years_for_team(team_name)
+        year = random.choice(years)
+
     conn, cursor = get_db_connection()
     if conn and cursor:
         try:
@@ -229,7 +234,7 @@ def get_years_for_team(team):
     conn, cursor = get_db_connection()
     if conn and cursor:
         try:
-            cursor.execute("SELECT yearid FROM teams WHERE team_name = %s ORDER BY yearid DESC", (team))
+            cursor.execute("SELECT yearid FROM teams WHERE team_name = %s ORDER BY yearid DESC", (team,))
             rows = cursor.fetchall()
             for row in rows:
                 years.append(row[0])

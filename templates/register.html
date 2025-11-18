@@ -10,6 +10,7 @@
         <input name="password" type="password" placeholder="Password" required>
         <input name="confirm" type="password" placeholder="Confirm Password" required>
 
+        <label for="favorite_team">Favorite Baseball Team</label>
         <select id="favorite_team" name="favorite_team">
             {% for team in teams %}
                 <option value="{{ team }}">{{ team }}</option>
