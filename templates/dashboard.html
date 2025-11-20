@@ -6,9 +6,15 @@
     <h2>Latest Baseball Stats</h2>
     <p>Hello {{ user_name }}! Welcome back to the Baseball Application.</p>
 
-    <a href="{{ url_for('pages.search') }}">Search history</a>
+    {% if current_user.is_admin %}
+        <a href="{{ url_for('pages.admin') }}">Admin Dashboard</a>
+    {% endif %}
 
 
-    <a href="{{ url_for('pages.teams', team_name=favorite_team, year="Pickles") }}">Random Year of the {{ favorite_team }}</a>
+    <button onclick="window.location.href = '{{ url_for('pages.search') }}';">Search History</button>
+
+
+    <button onclick="window.location.href = '{{ url_for('pages.teams', team_name=favorite_team, year="Pickles") }}';">
+        Random year of the {{ favorite_team }}</button>
 
 {% endblock %}

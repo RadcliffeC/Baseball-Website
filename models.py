@@ -10,3 +10,8 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(80), unique=True, nullable=False)
     favorite_team = db.Column(db.String(80))
+    user_type = db.Column(db.String(80), nullable=False, default='user')
+
+    @property
+    def is_admin(self):
+        return self.user_type=="admin"

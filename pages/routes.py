@@ -1,8 +1,10 @@
 from flask import request, render_template, jsonify, redirect, url_for, flash
+
+from auth import admin_required
 from models import User, db
 from teams import Team
 from email_validator import validate_email, EmailNotValidError
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 import random
 
 from db_connection import get_db_connection
@@ -36,6 +38,68 @@ def register_submit(username, password, email, favorite_team):
 
     login_user(user, True)
     return render_template('dashboard.html', user_name=username, favorite_team=favorite_team)
+
+@pages_bp.route('/admin')
+@login_required
+@admin_required
+def admin():
+    return render_template('admin_dashboard.html')
+
+@pages_bp.route('/admin/promote-user')
+@login_required
+@admin_required
+def promote_user():
+    users = User.query.filter(User.user_type != 'admin').all()
+    return render_template('admin_promote_user.html', users=users)
+
+@pages_bp.route('/admin/promote-user', methods=['POST'])
+@login_required
+@admin_required
+def promote_user_submit():
+    user_id = request.form.get('user_id')
+
+    if not user_id:
+        flash("No user selected.", "error")
+        return redirect(url_for('pages.promote_user'))
+
+    user = User.query.get_or_404(user_id)
+
+    # Promote to admin
+    user.user_type = 'admin'
+    db.session.commit()
+
+    flash(f"User '{user.username}' promoted to admin.", "success")
+    return redirect(url_for('pages.promote_user'))
+
+
+@pages_bp.route('/admin/remove-user')
+@login_required
+@admin_required
+def remove_user():
+    users = User.query.filter(User.user_type != 'admin').all()
+    return render_template('admin_remove_users.html', users=users)
+
+@pages_bp.route('/admin/remove-user/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def remove_user_submit(user_id):
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    flash("User removed.")
+    return redirect(url_for('pages.remove_users'))
+
+
+@pages_bp.route('/admin/make-admin/<int:user_id>', methods=['POST'])
+@login_required
+@admin_required
+def make_admin(user_id):
+    user = User.query.get_or_404(user_id)
+    user.user_type = 'admin'
+    db.session.commit()
+    flash("User promoted to admin.")
+    return redirect(url_for('pages.promote_user'))
+
 
 
 @pages_bp.route('/register', methods=['GET', 'POST'])
@@ -135,14 +199,14 @@ def players(playerId):
                  player.nameLast, player.nameGiven, player.weight, player.height,
                  player.bats, player.throws, player.debut, player.finalGame) = row[:16]
 
-            cursor.execute("""SELECT yearid, t.teamid, b.b_G, b.b_AB, b.b_R, b.b_H, b.b_2B, b.b_3B, b.b_HR, 
+            cursor.execute("""SELECT t.team_name, yearid, t.teamid, b.b_G, b.b_AB, b.b_R, b.b_H, b.b_2B, b.b_3B, b.b_HR, 
                        b.b_RBI, b.b_SB, b.b_CS, b.b_BB, b.b_SO, b.b_IBB, b.b_HBP, b.b_SH, b.b_SF, b.b_GIDP
                 FROM batting b 
                          NATURAL JOIN teams t 
                 WHERE playerID = %s ORDER BY yearid""", (playerId,))
             batting_career = cursor.fetchall()
 
-            cursor.execute("""SELECT yearid, t.teamid, p.p_W, p.p_L, p.p_G, p.p_GS, p.p_CG, p.p_SHO, p.p_SV, p.p_IPOuts,
+            cursor.execute("""SELECT t.team_name, yearid, t.teamid, p.p_W, p.p_L, p.p_G, p.p_GS, p.p_CG, p.p_SHO, p.p_SV, p.p_IPOuts,
                     p.p_H, p.p_ER, p.p_HR, p.p_BB, p.p_SO, p.p_BAOpp, p.p_ERA, p.p_IBB, p.p_WP, p.p_HBP,
                     p.p_BK, p.p_BFP, p.p_GF, p.p_R, p.p_SH, p.p_SF, p.p_GIDP
                  FROM pitching p NATURAL JOIN teams t

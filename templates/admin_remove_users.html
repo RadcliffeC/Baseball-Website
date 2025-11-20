@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Admin | Baseball{% endblock %}
+
+{% block content %}
+    <h1>Remove Users</h1>
+
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Action</th>
+    </tr>
+
+    {% for u in users %}
+    <tr>
+        <td>{{ u.username }}</td>
+        <td>
+            <form method="POST" action="{{ url_for('pages.remove_user', user_id=u.id) }}">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
