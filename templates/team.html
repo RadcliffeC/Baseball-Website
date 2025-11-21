@@ -40,6 +40,16 @@
                             {% endfor %}
                         </tr>
                     {% endfor %}
+                    {% if batting_totals %}
+                    <tr class="table-secondary fw-bold">
+                        <td>Totals</td>
+                        {% for total in batting_totals %}
+                            <td>
+                                {{ total }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endif %}
                     </tbody>
                 </table>
             </div>
@@ -73,6 +83,16 @@
                             {% endfor %}
                         </tr>
                     {% endfor %}
+                     {% if pitching_totals %}
+                    <tr class="table-secondary fw-bold">
+                        <td>Totals</td>
+                        {% for total in pitching_totals %}
+                            <td>
+                                {{ total }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endif %}
                     </tbody>
                 </table>
             </div>

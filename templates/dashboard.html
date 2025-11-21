@@ -7,7 +7,7 @@
     <p>Hello {{ user_name }}! Welcome back to the Baseball Application.</p>
 
     {% if current_user.is_admin %}
-        <a href="{{ url_for('pages.admin') }}">Admin Dashboard</a>
+        <button onclick="window.location.href = '{{ url_for('admin.admin') }}';">Admin Dashboard</button>
     {% endif %}
 
 

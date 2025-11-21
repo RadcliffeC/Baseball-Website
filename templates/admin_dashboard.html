@@ -6,8 +6,8 @@
     <h2>Admin Dashboard</h2>
     <p>Hello {{ user_name }}! Welcome back to the Baseball Application Admin Dashboard.</p>
 
-    <button onclick="window.location.href = '{{ url_for('pages.remove_user') }}';">Remove Users</button>
+    <button onclick="window.location.href = '{{ url_for('admin.remove_user') }}';">Remove Users</button>
 
-    <button onclick="window.location.href = '{{ url_for('pages.promote_user') }}';">Promote User to Admin</button>
+    <button onclick="window.location.href = '{{ url_for('admin.promote_user') }}';">Promote User to Admin</button>
 
 {% endblock %}

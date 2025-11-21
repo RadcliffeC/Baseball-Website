@@ -4,6 +4,7 @@ from sqlalchemy.sql.functions import user
 
 from models import db, User
 from pages.routes import pages_bp
+from admin.routes import admin_bp
 
 
 def create_app():
@@ -11,15 +12,13 @@ def create_app():
     app.debug = True
 
     app.config['SECRET_KEY'] = 'a-very-secret-key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:rootroot@localhost/baseball'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
     db.init_app(app)
 
     with app.app_context():
-        '''This is a command to drop the entire user table in the SQLALchemy database'''
-        #db.drop_all()
         db.create_all()
 
     login_manager = LoginManager()
@@ -29,6 +28,8 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
+
+    app.register_blueprint(admin_bp)
     app.register_blueprint(pages_bp)
 
     return app
