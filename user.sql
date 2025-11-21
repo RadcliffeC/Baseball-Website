@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(80) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(80) NOT NULL UNIQUE,
+    favorite_team VARCHAR(80),
+    user_type VARCHAR(80) NOT NULL DEFAULT 'user'
+);

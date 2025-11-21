@@ -168,7 +168,8 @@ def players(playerId):
 def teams(team_name):
     year = request.args.get('year')
     selected_team = None
-    batting_stats, pitching_stats, batting_totals, pitching_totals = [], [], [], []
+    ws_winner = False
+    batting_stats, pitching_stats, batting_totals, pitching_totals, division_results = [], [], [], [], []
 
     if not year:
         flash("Please select a year")
@@ -183,12 +184,13 @@ def teams(team_name):
         try:
 
                 cursor.execute(
-                    "SELECT team_name, yearid, team_W, team_L, team_HR, park_name, team_attendance "
+                    "SELECT team_name, yearid, team_W, team_L, team_HR, park_name, team_attendance, WSWin "
                     "FROM teams WHERE team_name = %s AND yearid = %s",
                     (team_name, year))
                 row = cursor.fetchone()
                 if row:
                     selected_team = Team(row[0], row[1], row[2], row[3], row[4], row[5], row[6])
+                    ws_winner = (row[7] == 'Y')
 
                 batting_query = """
                 SELECT p.playerid, p.nameLast, b.b_G, b.b_AB, b.b_R, b.b_H, b.b_2B, b.b_3B, b.b_HR, 
@@ -207,10 +209,24 @@ def teams(team_name):
                     WHERE t.team_name = %s AND yearid = %s
                 """
 
+                division_query = """
+                SELECT t.team_name, t.team_w, t.team_l, t.team_rank, t.divID, t.lgID
+                FROM teams t 
+                JOIN teams sel
+                    ON t.yearID = sel.yearID
+                    AND t.lgID = sel.lgID
+                    AND t.divID = sel.divID
+                WHERE sel.team_name = %s 
+                  AND sel.yearID = %s
+                ORDER BY team_rank ASC
+                """
+
                 cursor.execute(batting_query, (team_name, year))
                 batting_stats = cursor.fetchall()
                 cursor.execute(pitching_query, (team_name, year))
                 pitching_stats = cursor.fetchall()
+                cursor.execute(division_query, (team_name, year))
+                division_results = cursor.fetchall()
 
                 if batting_stats:
                     num_cols = len(batting_stats[0])
@@ -236,7 +252,9 @@ def teams(team_name):
         pitching=pitching_stats,
         year=year,
         batting_totals=batting_totals,
-        pitching_totals=pitching_totals
+        pitching_totals=pitching_totals,
+        division_results = division_results,
+        ws_winner = ws_winner
     )
 
 

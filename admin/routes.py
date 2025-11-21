@@ -53,7 +53,7 @@ def remove_user_submit(user_id):
     db.session.delete(user)
     db.session.commit()
     flash("User removed.")
-    return redirect(url_for('pages.remove_users'))
+    return redirect(url_for('admin.remove_user'))
 
 
 @admin_bp.route('/make-admin/<int:user_id>', methods=['POST'])
@@ -64,5 +64,5 @@ def make_admin(user_id):
     user.user_type = 'admin'
     db.session.commit()
     flash("User promoted to admin.")
-    return redirect(url_for('pages.promote_user'))
+    return redirect(url_for('admin.promote_user'))
 

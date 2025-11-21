@@ -193,3 +193,16 @@ footer {
     height: 2px;
     background-color: var(--baseball-red);
 }
+
+.table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+
+    table.dataTable {
+        width: 100% !important;      /* Prevent DataTables from stretching */
+        display: block;               /* Forces scroll instead of overflow hidden */
+        overflow-x: auto;
+        white-space: nowrap;          /* Prevent wrapping */
+    }

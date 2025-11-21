@@ -7,6 +7,14 @@
 
     {%  if team %}
 
+        {% if ws_winner %}
+            <div style="text-align:center;">
+        <h1 class="text-success fw-bold">
+        WORLD SERIES CHAMPION
+        </h1>
+            </div>
+        {% endif %}
+
     <h3>
     in {{ year }} , the {{ team.team_name }} had {{ team.wins }} wins and {{ team.losses }} losses.
      They scored a total of {{ team.team_hr }} home runs for the season.
@@ -14,6 +22,35 @@
        Their home ballpark for {{ year }} was {{ team.park }}.
         They had {{ team.attendance }} people attend their home games.
     </h3>
+
+    <h3>Division Standings</h3>
+    {% if division_results %}
+        <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for row in division_results %}
+                <tr>
+                    <td>{{ row[3] }}</td>
+                    <td>{{ row[0] }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ row[2] }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <p>No division results found.</p>
+        {% endif %}
+
 
      <!-- Batting Stats -->
         <h3 class="mt-5">Batting Stats</h3>
